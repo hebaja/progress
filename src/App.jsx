@@ -18,16 +18,6 @@ const NODES = [1, 2, 3, 4, 5];
 const TOTAL = 5;
 const STEP = 0.25;
 
-function generateTicks() {
-  const ticks = [];
-  for (let v = STEP; v <= TOTAL; v += STEP) {
-    ticks.push(v);
-  }
-  return ticks;
-}
-
-const TICKS = generateTicks();
-
 export default function App() {
   const [progressValue, setProgressValue] = useState(0);
 
@@ -49,7 +39,7 @@ export default function App() {
 
         <Typography variant="subtitle1" sx={{ mt: 4 }}>Custom Box Implementation</Typography>
 
-        <Box sx={{ position: "relative", height: 80, mt: 2, mx: 2, width: "50%" }}>
+        <Box sx={{ position: "relative", height: 80, mt: 2, mx: 2, width: "30%" }}>
           <Box
             sx={{
               position: "absolute",
@@ -76,21 +66,26 @@ export default function App() {
             }}
           />
 
-          {TICKS.map((tick) => (
-            <Box
-              key={tick}
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: `${(tick / TOTAL) * 100}%`,
-                width: 2,
-                height: 12,
-                bgcolor: tick <= progressValue ? "gold" : "grey.400",
-                transform: "translate(-50%, -50%)",
-                borderRadius: 1,
-              }}
-            />
-          ))}
+          <Box
+            sx={{
+              "@keyframes pop": {
+                "0%": { transform: "translate(-50%, -50%) scale(1)" },
+                "50%": { transform: "translate(-50%, -50%) scale(1.6)" },
+                "100%": { transform: "translate(-50%, -50%) scale(1)" },
+              },
+              position: "absolute",
+              top: "50%",
+              left: 0,
+              transform: "translate(-50%, -50%)",
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              bgcolor: progressValue > 0 ? "gold" : "grey.400",
+              zIndex: 1,
+              transition: "all 0.2s",
+              animation: progressValue > 0 ? "pop 0.3s ease" : "none",
+            }}
+          />
 
           {NODES.map((node) => {
             const isCompleted = node <= progressValue;
@@ -98,41 +93,30 @@ export default function App() {
               <Box
                 key={node}
                 sx={{
+                  "@keyframes pop": {
+                    "0%": { transform: "translate(-50%, -50%) scale(1)" },
+                    "50%": { transform: "translate(-50%, -50%) scale(1.4)" },
+                    "100%": { transform: "translate(-50%, -50%) scale(1)" },
+                  },
                   position: "absolute",
                   top: "50%",
                   left: `${(node / TOTAL) * 100}%`,
                   transform: "translate(-50%, -50%)",
-                  width: 28,
-                  height: 28,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  bgcolor: isCompleted ? "gold" : "background.paper",
-                  border: (theme) =>
-                    `2px solid ${isCompleted ? "gold" : theme.palette.grey[400]}`,
-                  color: isCompleted ? "common.white" : "grey.500",
-                  fontSize: 12,
-                  fontWeight: "bold",
+                  fontSize: 28,
+                  color: isCompleted ? "gold" : "grey.400",
+                  WebkitTextStroke: isCompleted ? "1px grey" : "none",
+                  paintOrder: "stroke fill",
                   zIndex: 1,
                   transition: "all 0.2s",
+                  animation: isCompleted ? "pop 0.3s ease" : "none",
+                  lineHeight: 1,
                 }}
               >
-                {node}
+                {"★"}
               </Box>
             );
           })}
         </Box>
-
-        <Slider
-          value={progressValue}
-          onChange={(_, value) => setProgressValue(value)}
-          min={0}
-          max={TOTAL}
-          step={STEP}
-          marks={NODES.map((v) => ({ value: v, label: String(v) }))}
-          sx={{ mt: 6, mx: 2 }}
-        />
 
         <Divider sx={{ my: 4 }} />
 
